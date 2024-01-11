@@ -1,0 +1,82 @@
+\phantomsection %avoid the hyperref warnings
+\subsection{Study Type}
+This is a cross-sectional study conducted as part of the "Multijurisdictional Survey of Public Health/Pandemic Related Trust, Communication, and Behaviors." The survey was conducted using Random Domain Intercept technology and was collected and managed by the Real-Time Interactive World-Wide Intelligence (RIWI) platform (RIWI Corp., Toronto, Canada).
+
+\subsection{Participants and Data Collection}  
+The data is derived from 116,743 voluntary participants from 11 countries (Brazil, Canada, Egypt, France, India, Mexico, Nigeria, Philippines, South Korea, Thailand, and Turkey) between September 2022 and December 2022, representing two distinct waves of the pandemic.
+
+The data was collected by the RIWI Corp platform, which gathers self-reported data on participants' compliance with public health guidelines, perceived quality of information from healthcare professionals and politicians, consulted sources of information, areas of residence, and levels of education during the COVID-19 pandemic. Questions were randomly posed, and each participant was free to answer all or some of the questions.
+
+\subsection{Measures and Variables}  
+The exposure variable consists of the primary source of information about COVID-19. Three categories were defined based on the quality of the source: "Good" for international media, the World Health Organization (WHO), and scientific publications; "Moderate" for national media and local governments; "Poor" for social media (Facebook, Twitter, Instagram, Tik Tok, etc.), social messengers (e.g., WhatsApp groups, Telegram, etc.), and friends and family.
+
+The outcome of interest is the willingness to adhere to future public health measures during the COVID-19 pandemic, defining two categories: adherence to all or most measures and adherence to very few or no measures.
+
+The relationships between different variables were illustrated through a Directed Acyclic Graph (DAG) (\cref{fig-DAG}). 
+
+\begin{figure} [ht!]
+    \centering
+    \begin{tikzpicture} [scale= 0.75, transform shape]
+        \node [block] (CRL) 
+            {\begin{tabular}{l} 
+                        Country \\
+                        Region\\
+                        Live area
+            \end{tabular}};  
+        \node [block, right = 1 cm  of CRL] (ED) {Education};
+        \node [block, above left = 2 cm and 0cm  of ED] (AG)
+            {\begin{tabular}{l} 
+                        Age \\
+                        Gender              
+            \end{tabular}};
+        \node [block, right = 1 cm  of ED, 
+                fill={rgb,255: red,204; green,255; blue,204}] (PIF) {\begin{tabular}{l} 
+                        Primary \\
+                        Covid Infosource                
+                        \end{tabular}};                    
+        \node [block, right = 2 cm  of PIF] (PC)        
+            {\begin{tabular}{l} 
+                        Personnal \\
+                        compliance               
+            \end{tabular}};        
+        \node [block, below right  =  1.5 cm and -0.5 cm  of PIF] (COC) {Community compliance}; 
+        \node [block, right = 2 cm  of PC , 
+                fill={rgb,255: red,102; green,178; blue,255}] (FC) {\begin{tabular}{l} 
+                        Future \\
+                        compliance               
+                    \end{tabular}};                
+        \node [block, below left = 3 cm and -1 cm  of PIF] (DC) {Doctors' communication};
+                \node [block, below left = 0 cm and - 3 cm  of DC] (PoC) {Political communication};
+        \draw [line] (CRL) to (ED);
+        \draw [line] (ED) to (PIF);
+        \draw [line] (PIF) to (PC);
+        \draw [line] (PC) to (FC);
+        \draw [line] (CRL) to [out = 25, in = 155, looseness = 0.5](PIF);
+        \draw [line] (CRL) to [out = 25, in = 155, looseness = 0.5](FC);
+        \draw [line] (ED) to [out = 25, in = 155, looseness = 0.5](PC);
+        \draw [line] (ED) to [out = 25, in = 155, looseness = 0.5](FC);
+        \draw [line] (COC) to [out = 110, in = 240, looseness = 0.5](PC);
+        \draw [line] (COC) to [out = 0, in = 225, looseness = 0.5](FC);
+        \draw [line] (DC) to [out = 160, in = 230, looseness = 0.5](PIF);
+        \draw [line] (DC) to [out = 0, in = 245, looseness = 1.25](FC);
+        \draw [line] (PoC) to [out = 170, in = 230, looseness = 0.5](PIF);
+        \draw [line] (PoC) to [out = 0, in = 250, looseness = 1.25](FC);
+        \draw [line] (AG) to [out = 280, in = 175, looseness = 0.5](PIF);
+        \draw [line] (AG) to [out = 0, in = 130, looseness = 0.75](PC);
+        \draw [line] (AG) to [out = 5, in = 120, looseness = 0.5](FC);
+    \end{tikzpicture}
+    \caption{\label{fig-DAG}Directed acyclic graph (DAG), showing the relationship between the information collected in the survey, and used for causal inference in this study.}
+\end{figure}
+
+Adherence to restrictive measures during the pandemic serves as a mediator variable in the association between the information source and future willingness to adhere. 
+
+Other variables act as confounding factors, including age, gender, level of education, region of residence (rural or urban), perception of the usefulness and reliability of communication from doctors and politicians (Yes or No). The country serves as the grouping variable for observations.
+
+
+\subsection*{Statistical Analysis}  
+To address the study's objectives, data analysis will be conducted in several stages. First, a descriptive analysis will be performed based on variable types and their distributions to estimate frequencies, means, standard deviations, or median and interquartile range (IQR).
+
+Given the hierarchical structure of the data, the effect of the information source will be evaluated through a multilevel mediation analysis. A model-based approach has been adopted, and two mixed-effects logistic regression models have been implemented for the outcome (future adherence) and the mediator (current adherence). Each model is adjusted for all confounding factors. A random effect by country will be applied to the intercept and coefficients related to the exposure and mediator. Subsequently, mediation parameters (total effect, direct effect, and indirect effect) will be estimated using the Baron and Kenny product-of-coefficients method.
+
+These various analyses were conducted using the R software with the lme4 package for mixed-effects models and the mediation package for the mediation analysis. The mediation package does not allow for estimating mediation parameters specific to each group (country). Therefore, the Baron and Kenny method was directly applied based on the outputs of the regression models for the outcome and mediator to calculate point estimates. Confidence intervals were subsequently estimated using the Bootstrap method.
+

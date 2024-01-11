@@ -1,0 +1,38 @@
+%%% TITLE, AUTHOR, AFFILIATIONS, ABSTRACT %%%
+
+%%% ------------ TITLE ------------ %%%
+
+\title{\textbf{Trust and Adherence to Public Health Measures}}
+
+
+%%% ------------ AUTHORS ------------ %%%
+
+\author[1,2,3]{Rado~M.~Ramasy~R.~}
+\author[1,2,3]{Ariel~M.~Ortiz}
+\author[2,3]{Rowin~J.~Alpharo}
+\author[2,3]{William Ruth}
+\author[1,2,3,*]{Bouchra Nasri}
+
+
+\affil[1]{Centre de Recherches Mathématiques, University of Montreal,
+Montréal, Canada}
+\affil[2]{Department of Social and Preventive Medicine, École de Santé
+Publique, University of Montreal, Montréal, Canada}
+\affil[3]{Centre de recherche en santé publique, University of Montréal,
+Montréal, Canada}
+
+\affil[*]{Corresponding author, \url{bouchra.nasri@umontreal.ca}}
+\affil[ ]{ } % for some blank space
+
+
+\renewcommand\Affilfont{\footnotesize} % size of affilitations
+\setcounter{Maxaffil}{0} % no max for num affiliations
+\date{} % If you want a date fill this in (e.g. \date{February 2022})
+
+
+\newcommand{\makeAbstract}{
+\renewcommand{\abstractname}{\color{sectioncolor}Abstract}
+\begin{abstract}
+
+\end{abstract}
+}

@@ -1,0 +1,441 @@
+%%% ------------ OVERVIEW OF THIS TEMPLATE ------------ %%%
+% This is a Capra Lab Manuscript template! It was developed by the Capra
+% Lab and converted to a LaTex document by Evonne McArthur 2/2022 and last
+% edited 2/2022. 
+
+% To use this template, you should probably read the whole compiled document
+% because it contains lots of great tips. Once you are ready to go, you 
+% should delete the tips in each section (\abstractTips \introTips \resultsTips 
+% \captionTips \methodsTips \discussionTips and \generalTips). Then you should
+% delete the REMOVEME_tips.tex file and the call to that file in this document
+% (\input{REMOVEME_tips}). Then add your own content to the relevant subfiles.
+
+% Figures should be uploaded to the ./main_figs and ./supplement/suppl_figs
+% folders. Tables should be uploaded to ./supplement/suppl_tabs. When you work
+% with main text figures, you should create a "code name" for them. You will
+% follow the format in 4maintextFigs.tex to add a function that will generate
+% the figure. When you want that figure to appear in the manuscript call that
+% function (e.g. \codename).
+
+% Note that this document contains info about how to customize these things:
+% fontsize, font (to Arial), line spacing, line numbers, left vs. justified
+% aligned, number or author-date citations, natbib vs bibLaTeX citations,
+% sideways tables and figures, figure references and more!
+
+% See these resources for more LaTeX tips:
+%https://en.m.wikibooks.org/wiki/LaTeX
+%https://tobi.oetiker.ch/lshort/lshort.pdf
+%https://gangw.cs.illinois.edu/latex.pdf
+%https://web.mit.edu/rsi/www/pdfs/new-latex.pdf
+%http://hoffman.physics.harvard.edu/Hoffman-example-paper.pdf
+
+%%% ------------ READ IN PACKAGES & SETUP ------------ %%%
+
+% Basics, font size, page setup, link format, line spacing/numbering
+\documentclass[11pt]{article} % font size
+\usepackage[english]{babel}
+\usepackage[a4paper,margin= 2 cm]{geometry} % page setup
+\usepackage{authblk} % author affiliations
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue, filecolor=blue,breaklinks=true]{hyperref} % Hyperlinks, needed for biblatex, other option: allcolors=blue
+\setcounter{secnumdepth}{0} % disable section numbering, generates a few warnings but these should not effect the document
+\usepackage{setspace} % linespacing
+\usepackage{lineno} % line numbering
+\renewcommand\linenumberfont{\normalfont\scriptsize\fontspec{Arial}\color{black}}
+\usepackage{csquotes} % Recommended for biblatex, must load after lineno or will get a warning
+\usepackage{ragged2e}% for left aligning
+\setlength{\RaggedRightParindent}{\parindent} % for paragraph indent with left aligning
+\usepackage{array} % used to soft wrap text in Table S3
+
+% Write math as font
+\usepackage[no-math]{fontspec}
+\setmainfont{Arial}
+\usepackage[defaultmathsizes]{mathastext}
+\usepackage{amsmath}
+
+% Figure references and bolding them https://tex.stackexchange.com/questions/87903/bold-cross-references
+\usepackage[capitalise, noabbrev, nameinlink]{cleveref}
+\usepackage[labelsep=period]{caption} % change separator to period instead of colon
+\crefdefaultlabelformat{#2#1#3}
+\Crefname{figure}{Figure}{Figures}
+\Crefname{table}{Table}{Tables}
+\Crefname{section}{\textbf{Section}}{\textbf{Sections}}
+\newcommand{\crefrangeconjunction}{--} % change conjunction b/w figures
+\newcommand{\crefpairconjunction}{, }
+\newcommand{\creflastconjunction}{, }
+\newcommand{\crefmiddleconjunction}{, }
+
+%%% ------------ Figures, Tables and captions ------------ %%%
+
+\usepackage{graphicx}
+\graphicspath{{./main_figs/}{./supplement/suppl_figs/}} % paths for figs
+\DeclareGraphicsExtensions{.pdf,.jpeg,.JPG,.png,.PNG, .eps, .tiff}
+\usepackage{subcaption} % for subcaptions (panels), and add parentheses
+\DeclareCaptionLabelFormat{bold}{{(#2)}} % bold subpanel letter in caption
+\captionsetup{subrefformat=bold} % bold subpanel letter in caption
+\renewcommand{\thesubfigure}{\Alph{subfigure}} % Make subpanel numbering capitalized
+\newcommand{\labelphantom}[1]{%  To make subpanel references easier from https://tex.stackexchange.com/a/255790/121424 
+  \parbox{0pt}{\phantomsubcaption\label{#1}}%
+}
+\usepackage{pgffor} % for function to make figures with subpanels
+\usepackage{alphalph} % for function to make figures with subpanels
+\usepackage[labelfont=bf, textfont=bf, singlelinecheck=off, textfont=footnotesize]{caption} % boldness of captions
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{rotating}
+
+% % Read in helper functions
+% \input{helperFunctions}
+% 
+% % Can remove, are for the tips
+% \usepackage[dvipsnames]{xcolor} % can remove, for coloring the tips
+% \usepackage{changepage} % can remove, for width on the tips
+% \usepackage{enumitem} % can remove, for width on the tips
+
+ % soft wrap URLs and use same font as document
+\usepackage{xurl}
+\urlstyle{same}
+
+%%% ------------ Tikz figures ------------ %%% 
+\usepackage{tikz}
+\usetikzlibrary{positioning, matrix,shapes,arrows}
+\usetikzlibrary{arrows.meta}
+
+\usepackage{adjustbox}
+
+\tikzstyle{line} = [draw, -{Latex[length=3mm]}]
+\tikzstyle{block} = [rectangle, draw, fill=white!20, text centered, rounded corners, minimum height= 2.5em, minimum width = 8em]
+
+
+%%% ------------ REFERENCES FORMAT ------------ %%% 
+\usepackage[backend=bibtex, citestyle=numeric-comp, bibstyle=authoryear, sorting=none, natbib=true, url=false, minbibnames=10, maxbibnames=10, uniquename=false, uniquelist=false, giveninits=true]{biblatex}
+
+% add numbers to authoryear bibstyle in References
+\defbibenvironment{bibliography}
+  {\list
+    {\printtext[labelnumberwidth]{%
+       \printfield{labelprefix}%
+       \printfield{labelnumber}}}
+    {\setlength{\labelwidth}{\labelnumberwidth}%
+     \setlength{\leftmargin}{\labelwidth}%
+     \setlength{\labelsep}{\biblabelsep}%
+     \addtolength{\leftmargin}{\labelsep}%
+     \setlength{\itemsep}{\bibitemsep}%
+     \setlength{\parsep}{\bibparsep}}%
+     \renewcommand*{\makelabel}[1]{##1}}
+  {\endlist}
+  {\item}
+
+% add a period to each numbered reference
+\DeclareFieldFormat{labelnumberwidth}{#1.}
+
+% last names first
+\DeclareNameAlias{author}{family-given}
+
+% clear the month, issue number, and ISSN from references
+\AtEveryBibitem{\clearfield{month}}
+\AtEveryBibitem{\clearfield{number}}
+\AtEveryBibitem{\clearfield{issn}}
+
+% remove quotes from article title
+\DeclareFieldFormat[article]{title}{#1}
+
+% deitalicize journal title
+\DeclareFieldFormat{journaltitle}{#1\isdot}
+
+% axe "In:" before journal name
+\renewbibmacro{in:}{}
+
+% italicize volume number
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+}
+\DeclareFieldFormat[article]{volume}{\mkbibitalic{#1}}
+
+% format DOI
+\DeclareFieldFormat{doi}{\url{https://doi.org/#1}}
+
+% removes "pp" from pages
+\DefineBibliographyStrings{english}{%
+  page             = {},
+  pages            = {},
+} 
+
+% add a space between entries
+\setlength\bibitemsep{.2\baselineskip}
+
+% add bibliography resource
+\addbibresource{references/references.bib}
+
+
+%%% ------------ FONT COLOR FORMAT ------------ %%% 
+\usepackage{xcolor}
+\usepackage{caption}
+
+% Define a custom colors using the hexadecimal code
+\definecolor{sectioncolor}{HTML}{000000}
+\definecolor{black}{HTML}{000000}
+\definecolor{linkcolor}{HTML}{164CE8}
+
+% Set custom colors
+\usepackage{titlesec}
+\titleformat{\section}
+{\color{sectioncolor}\normalfont\Large\bfseries}
+{\thesection}{1em}{}
+
+\titleformat{\subsection}
+{\color{sectioncolor}\normalfont\large\bfseries}
+{\thesubsection}{1em}{}
+
+% Redefine the figures title color
+\DeclareCaptionFont{figuretitlecolor}{\color{sectioncolor}}
+\DeclareCaptionFont{figurecaptioncolor}{\color{black}}
+\captionsetup[figure]{labelfont=bf, textfont=figurecaptioncolor, font=figuretitlecolor}
+
+% Redefine the tables title color
+\DeclareCaptionFont{tabletitlecolor}{\color{sectioncolor}}
+\DeclareCaptionFont{tablecaptioncolor}{\color{black}\footnotesize}
+\captionsetup[table]{labelfont=bf, textfont=tablecaptioncolor, font=tabletitlecolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=linkcolor,
+    urlcolor=linkcolor,
+    citecolor=linkcolor
+}
+
+%%% ------------ TITLE PAGE FORMATTING ------------ %%% 
+
+% left align title, authors, and affiliations
+\makeatletter
+\renewcommand\maketitle{\par
+  \begingroup
+    \centering
+    \Large{\@title}\par
+  \endgroup
+  \vspace{0.5em}
+  \begin{center}
+    \@author
+  \end{center}
+}
+\makeatother
+
+% left align abstract title and justify abstract body
+\renewenvironment{abstract}{
+  \begin{flushleft}
+    \textbf{\abstractname}
+  \end{flushleft}
+  \vspace{-1.5em}
+  \par
+  \noindent\justify
+  \parfillskip=0pt
+}{
+  \par 
+}
+
+\usepackage{subfiles} % Best loaded last in the preamble
+
+%%% ------------ DOCUMENT ORGANIZATION ------------ %%%
+
+%%% TITLE, AUTHOR, AFFILIATIONS, ABSTRACT %%%
+
+%%% ------------ TITLE ------------ %%%
+
+\title{\textbf{Trust and Adherence to Public Health Measures}}
+
+
+%%% ------------ AUTHORS ------------ %%%
+
+\author[1,2,3]{Rado~M.~Ramasy~R.~}
+\author[1,2,3]{Ariel~M.~Ortiz}
+\author[2,3]{Rowin~J.~Alpharo}
+\author[2,3]{William Ruth}
+\author[1,2,3,*]{Bouchra Nasri}
+
+
+\affil[1]{Centre de Recherches Mathématiques, University of Montreal,
+Montréal, Canada}
+\affil[2]{Department of Social and Preventive Medicine, École de Santé
+Publique, University of Montreal, Montréal, Canada}
+\affil[3]{Centre de recherche en santé publique, University of Montréal,
+Montréal, Canada}
+
+\affil[*]{Corresponding author, \url{bouchra.nasri@umontreal.ca}}
+\affil[ ]{ } % for some blank space
+
+
+\renewcommand\Affilfont{\footnotesize} % size of affilitations
+\setcounter{Maxaffil}{0} % no max for num affiliations
+\date{} % If you want a date fill this in (e.g. \date{February 2022})
+
+
+\newcommand{\makeAbstract}{
+\renewcommand{\abstractname}{\color{sectioncolor}Abstract}
+\begin{abstract}
+
+\end{abstract}
+}
+\usepackage{Sweave}
+\begin{document}
+\input{0main-concordance}
+
+    \setstretch{1.15} %\onehalfspace
+    \linenumbers
+    
+    \maketitle
+        
+    \makeAbstract
+    \clearpage
+    
+    \section{Introduction}
+Personal health measures (PHMs) are interventions designed to limit the transmission of a disease within a population \cite{ayouni2021}. These measures include non-pharmaceutical interventions (such as travel restrictions, isolation of infected individuals, and masking), and pharmaceutical interventions such as vaccination\cite{cowling2020, mohammadi2022, moore2021}. 
+The implementation of PHMs in the event of a public health emergency or pandemic is crucial, as they can help reduce the final number of infected individuals, reach a turning point in advance, and prevent the occurrence of successive waves of infection \cite{liu2020, ngonghala2020, xiang2021}.
+However, the efficacy of PHMs is dependent on the level of compliance (adherence) from the population. This has been demonstrated by studies that have shown, in the context of the COVID-19 pandemic, longitudinal fluctuations in the levels of adherence to PHMs\cite{petherick2021, wright2022}, or that have estimated a significant reduction in the number of cases if individuals were not to experience fatigue to PHM compliance\cite{rahmandad2021}.
+
+The strong possibility of future public health emergencies that require the implementation of PHMs has motivated researchers to study which factors influence compliance. In this regard, reduced levels of compliance have been associated to being male\cite{smith2020, santos2022, lin2021}, having low income\cite{freeman2020}, low educational level\cite{savoia2021}, belonging to certain ethnic/racial groups\cite{ren2018}, perceiving that PHMs are less effective\cite{smith2020, pollak2021}, and low acceptance of moral rules\cite{smith2020}. On the other hand, higher adherence has been associated with perceived benefits from PHMs, social trust\cite{zaki2022}, cultural tightness\cite{schumpe2022}, and having pre-existing conditions\cite{bearth2021, silesh2021}.
+
+Furthermore, it has been shown that compliance to PHMs can also be influenced by trust, either at the governmental or social levels\cite{zaki2022, schumpe2022, nivette2021, pak2021, shanka2022, bargain2020, brouard2020, clark2020, blair2017, wright2021, nwakasi2022}. In other words, individuals with higher levels of confidence in their peers, communities, policymakers, scientists, or their governments have shown increased adherence to PHMs. Furthermore, trust is most important when individuals lack knowledge and need to rely in others to make decisions\cite{siegrist2014}. Such scenario is perfectly exemplified by public health emergencies, where information on a pathogen is initially scarce and the implementation of PHMs changes over time as decision-makers receive feedback and updated knowledge from the scientific community. Furthermore, compliance to PHMs depends on how the behaviors and attitudes of an individual change over time, in turn affecting the outcome of a public health emergency\cite{roma2020}. 
+
+On the other hand, individuals can change their behaviors (thus changing their level of compliance) based on health information they consume\cite{buonomo2020, bavel2020}. Ideally, the ample variety of sources of information available today (traditional media such as newspapers or television, social media, podcasts, blogs, etc.) should ease the acquisition of updated and relevant health information by individuals. However, this is not the case due to the existence of misinformation (false or inaccurate information that is deliberately created and intentionally propagated\cite{wu2019}), which exists across all types of information sources, but that, in the context of the COVID-19 pandemic, has found a niche in social media platforms\cite{walter2020, moran2020}. In this regard, previous studies have explored the association between sources of information and the COVID-19 pandemic, showing differences in behavioural responses in individuals depending on the media outlet they trusted the most \cite{zhao2020}, how individuals view traditional media as the largest source of COVID-19 information\cite{ali2020}, and reduced trust in government institutions as sources of COVID-19 information\cite{latkin2020}.
+
+In the context of future public health emergencies where compliance by individuals is to be molded by a combination of socio-demographic factors, trust (at the social and government levels), and health information obtained by individuals across different media outlets, there is an ongoing need to study how these factors can affect future compliance. In this regard, previous studies have analyzed the association between information and compliance, showing higher compliance in individuals with sufficient health literacy\cite{hermans2021}, lower compliance in those that avoid health information\cite{siebenhaar2020}, and an association between trust in informal information sources (i.e., family, friends) and engagement to preventive measures\cite{maykrantz2021}.
+
+However, these studies have been focused on data specific to certain countries. In the event of a global emergency, the socio-demographic characteristics of each country, along with the sources of information preferred by their population, and the different levels of social trust in each case are likely to result in different levels of compliance. Therefore, the experience from COVID-19 makes necessary to contrast the predictive capacity of these factors with regard to future compliance to PHMs between different countries, in order to provide decision-makers with a global perspective that can provide relevant information to inform public health strategies that may be used to improve adherence in the population.
+
+In this study, we hypothesized that different levels of community and government trust, preferred sources of information, and the socio-demographic characteristics of a country would result in different levels of future adherence to PHMs; and that contrasting these differences would provide insight on strategies that decision-makers might need use to improve adherence in the event of future public health emergencies.
+
+    \section{Methods}
+\phantomsection %avoid the hyperref warnings
+\subsection{Study Type}
+This is a cross-sectional study conducted as part of the "Multijurisdictional Survey of Public Health/Pandemic Related Trust, Communication, and Behaviors." The survey was conducted using Random Domain Intercept technology and was collected and managed by the Real-Time Interactive World-Wide Intelligence (RIWI) platform (RIWI Corp., Toronto, Canada).
+
+\subsection{Participants and Data Collection}  
+The data is derived from 116,743 voluntary participants from 11 countries (Brazil, Canada, Egypt, France, India, Mexico, Nigeria, Philippines, South Korea, Thailand, and Turkey) between September 2022 and December 2022, representing two distinct waves of the pandemic.
+
+The data was collected by the RIWI Corp platform, which gathers self-reported data on participants' compliance with public health guidelines, perceived quality of information from healthcare professionals and politicians, consulted sources of information, areas of residence, and levels of education during the COVID-19 pandemic. Questions were randomly posed, and each participant was free to answer all or some of the questions.
+
+\subsection{Measures and Variables}  
+The exposure variable consists of the primary source of information about COVID-19. Three categories were defined based on the quality of the source: "Good" for international media, the World Health Organization (WHO), and scientific publications; "Moderate" for national media and local governments; "Poor" for social media (Facebook, Twitter, Instagram, Tik Tok, etc.), social messengers (e.g., WhatsApp groups, Telegram, etc.), and friends and family.
+
+The outcome of interest is the willingness to adhere to future public health measures during the COVID-19 pandemic, defining two categories: adherence to all or most measures and adherence to very few or no measures.
+
+The relationships between different variables were illustrated through a Directed Acyclic Graph (DAG) (\cref{fig-DAG}). 
+
+\begin{figure} [ht!]
+    \centering
+    \begin{tikzpicture} [scale= 0.75, transform shape]
+        \node [block] (CRL) 
+            {\begin{tabular}{l} 
+                        Country \\
+                        Region\\
+                        Live area
+            \end{tabular}};  
+        \node [block, right = 1 cm  of CRL] (ED) {Education};
+        \node [block, above left = 2 cm and 0cm  of ED] (AG)
+            {\begin{tabular}{l} 
+                        Age \\
+                        Gender              
+            \end{tabular}};
+        \node [block, right = 1 cm  of ED, 
+                fill={rgb,255: red,204; green,255; blue,204}] (PIF) {\begin{tabular}{l} 
+                        Primary \\
+                        Covid Infosource                
+                        \end{tabular}};                    
+        \node [block, right = 2 cm  of PIF] (PC)        
+            {\begin{tabular}{l} 
+                        Personnal \\
+                        compliance               
+            \end{tabular}};        
+        \node [block, below right  =  1.5 cm and -0.5 cm  of PIF] (COC) {Community compliance}; 
+        \node [block, right = 2 cm  of PC , 
+                fill={rgb,255: red,102; green,178; blue,255}] (FC) {\begin{tabular}{l} 
+                        Future \\
+                        compliance               
+                    \end{tabular}};                
+        \node [block, below left = 3 cm and -1 cm  of PIF] (DC) {Doctors' communication};
+                \node [block, below left = 0 cm and - 3 cm  of DC] (PoC) {Political communication};
+        \draw [line] (CRL) to (ED);
+        \draw [line] (ED) to (PIF);
+        \draw [line] (PIF) to (PC);
+        \draw [line] (PC) to (FC);
+        \draw [line] (CRL) to [out = 25, in = 155, looseness = 0.5](PIF);
+        \draw [line] (CRL) to [out = 25, in = 155, looseness = 0.5](FC);
+        \draw [line] (ED) to [out = 25, in = 155, looseness = 0.5](PC);
+        \draw [line] (ED) to [out = 25, in = 155, looseness = 0.5](FC);
+        \draw [line] (COC) to [out = 110, in = 240, looseness = 0.5](PC);
+        \draw [line] (COC) to [out = 0, in = 225, looseness = 0.5](FC);
+        \draw [line] (DC) to [out = 160, in = 230, looseness = 0.5](PIF);
+        \draw [line] (DC) to [out = 0, in = 245, looseness = 1.25](FC);
+        \draw [line] (PoC) to [out = 170, in = 230, looseness = 0.5](PIF);
+        \draw [line] (PoC) to [out = 0, in = 250, looseness = 1.25](FC);
+        \draw [line] (AG) to [out = 280, in = 175, looseness = 0.5](PIF);
+        \draw [line] (AG) to [out = 0, in = 130, looseness = 0.75](PC);
+        \draw [line] (AG) to [out = 5, in = 120, looseness = 0.5](FC);
+    \end{tikzpicture}
+    \caption{\label{fig-DAG}Directed acyclic graph (DAG), showing the relationship between the information collected in the survey, and used for causal inference in this study.}
+\end{figure}
+
+Adherence to restrictive measures during the pandemic serves as a mediator variable in the association between the information source and future willingness to adhere. 
+
+Other variables act as confounding factors, including age, gender, level of education, region of residence (rural or urban), perception of the usefulness and reliability of communication from doctors and politicians (Yes or No). The country serves as the grouping variable for observations.
+
+
+\subsection*{Statistical Analysis}  
+To address the study's objectives, data analysis will be conducted in several stages. First, a descriptive analysis will be performed based on variable types and their distributions to estimate frequencies, means, standard deviations, or median and interquartile range (IQR).
+
+Given the hierarchical structure of the data, the effect of the information source will be evaluated through a multilevel mediation analysis. A model-based approach has been adopted, and two mixed-effects logistic regression models have been implemented for the outcome (future adherence) and the mediator (current adherence). Each model is adjusted for all confounding factors. A random effect by country will be applied to the intercept and coefficients related to the exposure and mediator. Subsequently, mediation parameters (total effect, direct effect, and indirect effect) will be estimated using the Baron and Kenny product-of-coefficients method.
+
+These various analyses were conducted using the R software with the lme4 package for mixed-effects models and the mediation package for the mediation analysis. The mediation package does not allow for estimating mediation parameters specific to each group (country). Therefore, the Baron and Kenny method was directly applied based on the outputs of the regression models for the outcome and mediator to calculate point estimates. Confidence intervals were subsequently estimated using the Bootstrap method.
+
+
+    \section{Results}
+\phantomsection
+\subsection{Population characteristics}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+\subsection{Effect of information source on restrictive measure's adherence} 
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+\subsection{Specificity by country}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum
+
+    \section{Discussion}
+\phantomsection
+\subsection{Effect of information source on restrictive measure's adherence} 
+\textbf{\textit{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum}} 
+
+\subsection{Limitations} 
+Studies that rely on convenience sampling are more susceptible to selection bias, as individuals are included based on their availability and willingness to participate or simply for logistical convenience. As is the case with this study, availability necessitates internet access to respond to the survey, which, in some countries, may be more accessible to specific demographic groups. Indeed, the proportion of individuals with university education is very high in the sample. The data is, therefore, limited to the population using the internet. However, the robustness of this study is strengthened through RIWI's technology, which allows for the inclusion of an exceptionally diverse web-based population, exceeding the capabilities of other internet-based platforms, as reported by Sargent et al. RIWI's sampling technology, combined with its significant sample size, maximizes external validity. \textbf{\textit{Demographic representativity will also be analyzed with population-weight reporting.}} 
+
+In the context of a voluntary cross-sectional study, the increased participation of health-conscious individuals can also lead to selection bias, which may overestimate the measured outcome (personal compliance with public health guidelines). Furthermore, cross-sectional studies suffer from the limitation of capturing only existing cases at a specific moment (23). As is the case with this study, compliance is exclusively determined at the time of the survey. Therefore, this study may not reflect changes in people's adherence levels over time. Longitudinal data would provide a more comprehensive representation of adherence over an extended period (23).
+
+Since the data is derived from a self-reported survey, recall bias is possible, wherein the accuracy of the provided data entries might be compromised due to faulty memory. This is particularly true for questions related to personal compliance with public health guidelines, as participants are required to assess their compliance over a two-year period. In this cross-sectional study, information bias may lead to non-differential misclassification concerning both the participants' primary source of information about COVID-19 and their level of compliance with public health guidelines. Non-differential misclassification of the exposure and outcome is likely to yield null results.
+Although the study has identified some potential confounding factors, there may be other unmeasured factors that could influence the results. These unmeasured factors may contribute to residual bias or unaccounted-for confounding. \textbf{\textit{A sensitivity analysis using the e-value** will be conducted to assess the potential impact of unmeasured confounders.}} 
+
+\subsection{Data and Code Availability}
+Identify original data sources and provide links to software in this section.
+
+\subsection{Acknowledgements}
+Thanks folks here. Note computational resources and look up specific language to use. For example, research completed using Wynton at UCSF can use language from \url{https://wynton.ucsf.edu/hpc/about/citation.html}. Include any relevant funding agencies and specific grant numbers here. Ask collaborators for information they want to include here.
+
+\subsection{Author Contributions}
+Use the CRediT Taxonomy to indicate author contributions. See \url{https://www.cell.com/pb/assets/raw/shared/guidelines/CRediT-taxonomy-1430242873507.pdf}.
+
+\subsection{Competing Interests}
+The authors declare no competing interests.
+
+
+
+
+    \begin{singlespace}
+        \printbibliography
+    \end{singlespace}
+    \clearpage
+    
+    %\section*{Supplementary Information}
+    %\setcounter{page}{1} % Set page at 1
+    %\input{supplement/0suppl_text}
+    %\clearpage
+    %\input{supplement/1suppl_figs}
+    %\input{supplement/2suppl_tabs}
+
+\end{document}

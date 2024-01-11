@@ -1,0 +1,23 @@
+\phantomsection
+\subsection{Effect of information source on restrictive measure's adherence} 
+\textbf{\textit{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum}} 
+
+\subsection{Limitations} 
+Studies that rely on convenience sampling are more susceptible to selection bias, as individuals are included based on their availability and willingness to participate or simply for logistical convenience. As is the case with this study, availability necessitates internet access to respond to the survey, which, in some countries, may be more accessible to specific demographic groups. Indeed, the proportion of individuals with university education is very high in the sample. The data is, therefore, limited to the population using the internet. However, the robustness of this study is strengthened through RIWI's technology, which allows for the inclusion of an exceptionally diverse web-based population, exceeding the capabilities of other internet-based platforms, as reported by Sargent et al. RIWI's sampling technology, combined with its significant sample size, maximizes external validity. \textbf{\textit{Demographic representativity will also be analyzed with population-weight reporting.}} 
+
+In the context of a voluntary cross-sectional study, the increased participation of health-conscious individuals can also lead to selection bias, which may overestimate the measured outcome (personal compliance with public health guidelines). Furthermore, cross-sectional studies suffer from the limitation of capturing only existing cases at a specific moment (23). As is the case with this study, compliance is exclusively determined at the time of the survey. Therefore, this study may not reflect changes in people's adherence levels over time. Longitudinal data would provide a more comprehensive representation of adherence over an extended period (23).
+
+Since the data is derived from a self-reported survey, recall bias is possible, wherein the accuracy of the provided data entries might be compromised due to faulty memory. This is particularly true for questions related to personal compliance with public health guidelines, as participants are required to assess their compliance over a two-year period. In this cross-sectional study, information bias may lead to non-differential misclassification concerning both the participants' primary source of information about COVID-19 and their level of compliance with public health guidelines. Non-differential misclassification of the exposure and outcome is likely to yield null results.
+Although the study has identified some potential confounding factors, there may be other unmeasured factors that could influence the results. These unmeasured factors may contribute to residual bias or unaccounted-for confounding. \textbf{\textit{A sensitivity analysis using the e-value** will be conducted to assess the potential impact of unmeasured confounders.}} 
+
+\subsection{Data and Code Availability}
+Identify original data sources and provide links to software in this section.
+
+\subsection{Acknowledgements}
+Thanks folks here. Note computational resources and look up specific language to use. For example, research completed using Wynton at UCSF can use language from \url{https://wynton.ucsf.edu/hpc/about/citation.html}. Include any relevant funding agencies and specific grant numbers here. Ask collaborators for information they want to include here.
+
+\subsection{Author Contributions}
+Use the CRediT Taxonomy to indicate author contributions. See \url{https://www.cell.com/pb/assets/raw/shared/guidelines/CRediT-taxonomy-1430242873507.pdf}.
+
+\subsection{Competing Interests}
+The authors declare no competing interests.

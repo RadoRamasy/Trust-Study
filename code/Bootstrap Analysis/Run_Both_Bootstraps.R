@@ -5,8 +5,8 @@
 # B = 640 # Total number of bootstrap replicates
 # B = 600 # Total number of bootstrap replicates
 # B = 320 # Total number of bootstrap replicates
-# B = 300 # Total number of bootstrap replicates
-B = 90 # Total number of bootstrap replicates
+B = 300 # Total number of bootstrap replicates
+# B = 90 # Total number of bootstrap replicates
 # B = 64 # Total number of bootstrap replicates
 # B = 60 # Total number of bootstrap replicates
 # B = 3 # Total number of bootstrap replicates
@@ -82,12 +82,15 @@ load(here("data","CleanDataFile-Trust-Nov102023.RData"))
 #                          optCtrl = list(maxfun = 2e5))
 # )
 
+
 # Load fitted models
 # save(mod_M, mod_Y, file = here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
 load(here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
 
 
-# Explore fitted models ----
+
+
+# # Explore fitted models ----
 # dat.ma.reorder = dat.ma
 # dat.ma.reorder$q8.pcis = relevel(dat.ma.reorder$q8.pcis, ref = "low")
 # 
@@ -110,7 +113,7 @@ load(here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
 #   family = "binomial",
 # )
 # mod_M_Rad  =  glm(
-#   q4.src ~ q8.pcis + q9.edu + q7.la + age_group + gender + country, 
+#   q4.src ~ q8.pcis + q9.edu + q7.la + age_group + gender + country,
 #   data = dat.ma.reorder,
 #   family = "binomial",
 # )
@@ -120,6 +123,15 @@ load(here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
 # Y_preds = mod_Y_fix$x[,-1]
 # 
 # PCA = prcomp(Y_preds, center=T, scale.=T)
+# 
+# predict(mod_Y) - predict(mod_Y_22)
+# 
+# sum_Y = summary(mod_Y)
+# sum_M = summary(mod_M)
+# sum_Y$coefficients[4,1] * sum_M$coefficients[3,1]
+
+
+
 
 
 
@@ -132,7 +144,7 @@ fixef_M = fixef(mod_M)
 
 all_fixefs = coef_vecs_2_data(fixef_Y, fixef_M) %>% mutate(country = "AG", .before=1)
 
-## Country specific mediation effects ----
+## Country specific coefficients ----
 mix_Y = coef(mod_Y)[[1]]
 mix_M = coef(mod_M)[[1]]
 
@@ -151,6 +163,20 @@ for(i in seq_along(all_countries)){
   all_effects_data = rbind(all_effects_data, this_effect_data)
 }
 
+
+
+# Construct dataset of fitted mediation effects ----
+all_med_effects_data_raw = matrix(0, nrow = nrow(all_effects_data), ncol = 3)
+for(i in seq_len(nrow(all_med_effects_data_raw))){
+  all_med_effects_data_raw[i,] = unlist(coef_data_2_med_effs(all_effects_data[i,-1]))
+}
+all_med_effects_data = tibble(country = all_effects_data$country)
+all_med_effects_data$de = all_med_effects_data_raw[,1]
+all_med_effects_data$ie = all_med_effects_data_raw[,2]
+all_med_effects_data$te = all_med_effects_data_raw[,3]
+
+# save(all_effects_data, all_med_effects_data, file = here("code", "Bootstrap Analysis", "Estimated_Effects.RData"))
+load(here("code", "Bootstrap Analysis", "Estimated_Effects.RData"))
 
 
 
@@ -185,8 +211,8 @@ tic()
 print("Running parametric bootstrap.")
 boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = T, .verbose = T)
 # boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose = T)
-# toc()
-# tic()
+toc()
+tic()
 print("Parametric bootstrap complete. Running non-parametric bootstrap.")
 boot_results_npar = all_boot_reps_npar(B, dat.ma, .parallel = T, .verbose = T)
 print("Non-parametric bootstrap complete.")
@@ -198,9 +224,7 @@ stopCluster(my_cluster)
 
 
 # save(boot_results_par, boot_results_npar, file = here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))
-# save(boot_results_par, file = here("code", "Bootstrap Analysis", "Par_Boot_Real_Data_Revised.RData"))
-# load(here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))
-load(file = here("code", "Bootstrap Analysis", "Par_Boot_Real_Data_Revised.RData"))
+load(here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))
 
 
 # 
@@ -294,3 +318,12 @@ data_med_effs = rbind(med_effs_par, med_effs_npar) %>%
 plot_med_effs_dens = ggplot(data_med_effs, aes(x = country, y = est, color = is_AG)) +
   geom_violin() +   guides(color="none") + ggtitle("Bootstrap Distributions of Mediation Effects") +
   facet_grid(rows = vars(med_type), cols = vars(boot_type)) + geom_hline(yintercept = 1)
+
+
+### Add estimates from original dataset ----
+all_med_effects_data_plotting = all_med_effects_data %>%
+  pivot_longer(cols = -"country", names_to = "med_type", values_to = "est") %>%
+  mutate(is_AG = country == "AG")
+
+plot_med_effs_dens_plus_estimates = plot_med_effs_dens +
+  geom_point(data = all_med_effects_data_plotting)

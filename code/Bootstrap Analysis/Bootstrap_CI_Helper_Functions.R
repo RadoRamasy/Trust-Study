@@ -43,7 +43,7 @@ get_many_med_effs = function(Y_data, M_data){
   
   # Compute mediation effects 
   med_data = coef_data %>%
-    mutate(country, boot_rep, de = exp(Y_X), ie = exp(Y_M + M_X), te = de * ie, .keep = "none")
+    mutate(country, boot_rep, de = exp(Y_X), ie = exp(Y_M * M_X), te = de * ie, .keep = "none")
   
   return(med_data)
 }
@@ -68,7 +68,7 @@ coef_vecs_2_data = function(Y_coefs, M_coefs){
 # Output: Direct, indirect and total mediation effects for each row in Input. Retains and identifying columns from Input (e.g. country, boot_rep)
 coef_data_2_med_effs = function(coef_data){
   med_data = coef_data %>%
-    mutate(de = exp(Y_X), ie = exp(M_X + Y_M), te = de * ie) %>%
+    mutate(de = exp(Y_X), ie = exp(M_X * Y_M), te = de * ie) %>%
     dplyr::select(!matches("\\w{1}_\\w{1}"))
   
   return(med_data)

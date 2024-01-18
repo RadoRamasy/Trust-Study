@@ -3,11 +3,15 @@
 ##################
 
 
+### A note about my_sim_merMod_par: I include the option to supply parameter estimates instead of extracting them from 
+### the fitted model. This is useful when M has been replaced with a bootstrap sample in the fitted lme4 object, but we want 
+### to generate a bootstrap sample for Y using the parameter estimates from the original dataset. 
+
 
 ### Simulate from the provided glmer logistic regression fit. 
 ### Returns simulated responses and a data frame of coefficients used to generate those responses.
 ### (both fixed effects and mixed effects by group)
-### Optionally supply the fixed and random effects for simulation (typically, this is used when replacing mediator with a bootstrap sample)
+### Optionally supply the fixed and random effects for simulation. See above note for typical use case.
 ### Note: Country code AG corresponds to fixed (aggregate) effects.
 my_sim_merMod_par = function(fit, fix_coef = NULL, ran_coef_SD_mat = NULL){
   names_fix = names(fixef(fit))
@@ -278,15 +282,6 @@ all_boot_reps_par = function(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose=T)
     all_boot_results_M = rbind(all_boot_results_M, all_boot_results[[i]]$M_effs)
   }
   
-  # all_boot_results_Y %>% 
-  #   group_by(pred, boot_rep) %>% 
-  #   summarise(A = sd(boot_eff), B = sd(est_eff)) %>% 
-  #   summarise(boot = mean(A), est = mean(B)) # Check for presence of random effects
-  # all_boot_results_M %>% 
-  #   group_by(pred, boot_rep) %>% 
-  #   summarise(A = sd(boot_eff), B = sd(est_eff)) %>% 
-  #   summarise(boot = mean(A), est = mean(B)) # Check for presence of random effects
-  
   
   output = list(results_Y = all_boot_results_Y, results_M = all_boot_results_M)
   return(output)
@@ -301,9 +296,9 @@ all_boot_reps_par = function(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose=T)
 
 
 
-### Performs one parametric bootstrap replicate for multilevel mediation analysis. 
-### Returns fixed effects and mixed effects by country, both those used to generate
-### the bootstrap sample and those predicted by models fit to the bootstrap sample.
+### Performs one non-parametric bootstrap replicate for multilevel mediation analysis. 
+### Returns fixed effects and mixed effects by country. Unlike the parametric sampler, 
+### here we only return estimated effects from the fitted models..
 ### Note: Country code AG corresponds to fixed (aggregate) effects.
 one_boot_rep_npar = function(dat.ma) {
   

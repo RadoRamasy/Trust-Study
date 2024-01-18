@@ -39,29 +39,9 @@ source(here("code", "Bootstrap Analysis", "Analyse_Bootstrap_Functions.R"))
 # Load Data ----
 load(here("data","CleanDataFile-Trust-Nov102023.RData"))
 
-# dat.ma = dat.ma[c(1:100, 22001:22100),]  ############################################################ Comment this out before pushing to Github
 
 
 # Fit models to observed data ----
-## Full models ----
-# mod_Y = glmer(
-#   q5.fc ~ q8.pcis + q4.src + q8.pcis * q4.src + q1.cc  + q2.dc + q3.pc +
-#     age_group + gender + q7.la  + q9.edu +
-#     (q8.pcis + q4.src + q8.pcis*q4.src | country),
-#   data = dat.ma,
-#   family = "binomial",
-#   control = glmerControl(optimizer = "bobyqa",
-#                          optCtrl = list(maxfun = 2e5))
-# )
-# mod_M  =  glmer(
-#   q4.src ~ q8.pcis + q2.dc + q3.pc +
-#     age_group + gender + q7.la +  q9.edu +
-#     (q8.pcis | country),
-#   data = dat.ma,
-#   family = "binomial",
-#   control = glmerControl(optimizer = "bobyqa",
-#                          optCtrl = list(maxfun = 2e5))
-# )
 ## Baron and Kenny style models ----
 # mod_Y = glmer(
 #   q5.fc ~ q8.pcis + q4.src + q1.cc  + q2.dc + q3.pc +
@@ -85,51 +65,7 @@ load(here("data","CleanDataFile-Trust-Nov102023.RData"))
 
 # Load fitted models
 # save(mod_M, mod_Y, file = here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
-load(here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
-
-
-
-
-# # Explore fitted models ----
-# dat.ma.reorder = dat.ma
-# dat.ma.reorder$q8.pcis = relevel(dat.ma.reorder$q8.pcis, ref = "low")
-# 
-# mod_Y_fix = glm(
-#   q5.fc ~ q8.pcis + q4.src + q1.cc  + q2.dc + q3.pc +
-#     age_group + gender + q7.la  + q9.edu,
-#   data = dat.ma, x=T,
-#   family = "binomial",
-# )
-# mod_M_fix  =  glm(
-#   q4.src ~ q8.pcis + q2.dc + q3.pc +
-#     age_group + gender + q7.la +  q9.edu,
-#   data = dat.ma,
-#   family = "binomial",
-# )
-# 
-# mod_Y_Rad = glm(
-#   q5.fc ~ q8.pcis + q9.edu + q7.la + q2.dc + q3.pc + age_group + gender + country,
-#   data = dat.ma.reorder,
-#   family = "binomial",
-# )
-# mod_M_Rad  =  glm(
-#   q4.src ~ q8.pcis + q9.edu + q7.la + age_group + gender + country,
-#   data = dat.ma.reorder,
-#   family = "binomial",
-# )
-# 
-# 
-# with(dat.ma, table(q5.fc, q8.pcis))
-# Y_preds = mod_Y_fix$x[,-1]
-# 
-# PCA = prcomp(Y_preds, center=T, scale.=T)
-# 
-# predict(mod_Y) - predict(mod_Y_22)
-# 
-# sum_Y = summary(mod_Y)
-# sum_M = summary(mod_M)
-# sum_Y$coefficients[4,1] * sum_M$coefficients[3,1]
-
+load(here("code", "Bootstrap Analysis", "Output", "Fitted_Models.RData"))
 
 
 
@@ -138,45 +74,45 @@ load(here("code", "Bootstrap Analysis", "Fitted_Models.RData"))
 # Construct dataset of fitted coefficients ----
 # Note: Only includes those coefficients relevant to mediation analysis
 
-## Fixed effects ----
-fixef_Y = fixef(mod_Y)
-fixef_M = fixef(mod_M)
-
-all_fixefs = coef_vecs_2_data(fixef_Y, fixef_M) %>% mutate(country = "AG", .before=1)
-
-## Country specific coefficients ----
-mix_Y = coef(mod_Y)[[1]]
-mix_M = coef(mod_M)[[1]]
-
-all_countries = levels(mod_Y@frame$country)
-all_effects_data = all_fixefs
-
-for(i in seq_along(all_countries)){
-  this_country = all_countries[i]
-  ind_this_country = which(rownames(mix_Y) == this_country)
-  this_mix_Y = unlist(mix_Y[ind_this_country,])
-  this_mix_M = unlist(mix_M[ind_this_country,])
-  
-  this_effect_data = coef_vecs_2_data(this_mix_Y, this_mix_M) %>%
-    mutate(country = this_country, .before = 1)
-  
-  all_effects_data = rbind(all_effects_data, this_effect_data)
-}
-
-
-
-# Construct dataset of fitted mediation effects ----
-all_med_effects_data_raw = matrix(0, nrow = nrow(all_effects_data), ncol = 3)
-for(i in seq_len(nrow(all_med_effects_data_raw))){
-  all_med_effects_data_raw[i,] = unlist(coef_data_2_med_effs(all_effects_data[i,-1]))
-}
-all_med_effects_data = tibble(country = all_effects_data$country)
-all_med_effects_data$de = all_med_effects_data_raw[,1]
-all_med_effects_data$ie = all_med_effects_data_raw[,2]
-all_med_effects_data$te = all_med_effects_data_raw[,3]
+# ## Fixed effects ----
+# fixef_Y = fixef(mod_Y)
+# fixef_M = fixef(mod_M)
+# 
+# all_fixefs = coef_vecs_2_data(fixef_Y, fixef_M) %>% mutate(country = "AG", .before=1)
+# 
+# ## Country specific coefficients ----
+# mix_Y = coef(mod_Y)[[1]]
+# mix_M = coef(mod_M)[[1]]
+# 
+# all_countries = levels(mod_Y@frame$country)
+# all_effects_data = all_fixefs
+# 
+# for(i in seq_along(all_countries)){
+#   this_country = all_countries[i]
+#   ind_this_country = which(rownames(mix_Y) == this_country)
+#   this_mix_Y = unlist(mix_Y[ind_this_country,])
+#   this_mix_M = unlist(mix_M[ind_this_country,])
+#   
+#   this_effect_data = coef_vecs_2_data(this_mix_Y, this_mix_M) %>%
+#     mutate(country = this_country, .before = 1)
+#   
+#   all_effects_data = rbind(all_effects_data, this_effect_data)
+# }
+# 
+# 
+# 
+# # Construct dataset of fitted mediation effects ----
+# all_med_effects_data_raw = matrix(0, nrow = nrow(all_effects_data), ncol = 3)
+# for(i in seq_len(nrow(all_med_effects_data_raw))){
+#   all_med_effects_data_raw[i,] = unlist(coef_data_2_med_effs(all_effects_data[i,-1]))
+# }
+# all_med_effects_data = tibble(country = all_effects_data$country)
+# all_med_effects_data$de = all_med_effects_data_raw[,1]
+# all_med_effects_data$ie = all_med_effects_data_raw[,2]
+# all_med_effects_data$te = all_med_effects_data_raw[,3]
 
 # save(all_effects_data, all_med_effects_data, file = here("code", "Bootstrap Analysis", "Estimated_Effects.RData"))
-load(here("code", "Bootstrap Analysis", "Estimated_Effects.RData"))
+load(here("code", "Bootstrap Analysis", "Output", "Estimated_Effects.RData"))
 
 
 
@@ -210,7 +146,6 @@ clusterExport(my_cluster, c("dat.ma", "mod_Y", "mod_M"))
 tic()
 print("Running parametric bootstrap.")
 boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = T, .verbose = T)
-# boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose = T)
 toc()
 tic()
 print("Parametric bootstrap complete. Running non-parametric bootstrap.")
@@ -224,15 +159,10 @@ stopCluster(my_cluster)
 
 
 # save(boot_results_par, boot_results_npar, file = here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))
-load(here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))
+load(here("code", "Bootstrap Analysis", "Output", "Both_Boots_Real_Data.RData"))
 
 
-# 
-# 
-# 
-# Y_data = boot_results_Y
-# M_data = boot_results_M
-
+# Construct bootstrap CIs ----
 boot_CIs_par = get_par_boot_CIs(boot_results_par, mod_Y, mod_M)
 boot_CIs_npar = get_npar_boot_CIs(boot_results_npar, mod_Y, mod_M)
 
@@ -243,15 +173,18 @@ data_boot_CIs = boot_CIs_par %>%
   dplyr::select(-SEP) %>%
   full_join(boot_CIs_npar, by = c("country", "type", "estimate"), suffix = c("_par", "_npar")) %>%  # Consolidate datasets
   rename(wald_lcl_par = wald_lcl, wald_ucl_par = wald_ucl) %>%  # Add appropriate suffix to Wald intervals
-  pivot_longer(!c(country, type, estimate), names_pattern = "(\\w+)_(\\w+)_(\\w+)", names_to = c("CI_type", "bound", "boot_type")) %>%
-  pivot_wider(names_from = bound, values_from = value) %>%
-  mutate(Interval_Type = paste0(boot_type, "-", CI_type))
+  pivot_longer(!c(country, type, estimate), names_pattern = "(\\w+)_(\\w+)_(\\w+)", names_to = c("CI_type", "bound", "boot_type")) %>%  # Move grouping information to columns
+  pivot_wider(names_from = bound, values_from = value) %>%  # Move interval endpoints to columns
+  mutate(Interval_Type = paste0(boot_type, "-", CI_type))   # Consolidate bootstrap and interval type into single label
 
 data_boot_CIs_plot = mutate(data_boot_CIs, is_AG = country=="AG") %>% rename(med_type = type)
 
+## Forest plot of bootstrap CIs ----
 plot_boot_CIs = ggplot(data_boot_CIs_plot, aes(y = country, group = country, color = is_AG)) + geom_point(aes(x = estimate)) +
   geom_linerange(aes(xmin = lcl, xmax = ucl)) + facet_grid(rows = vars(Interval_Type), cols = vars(med_type)) +
   geom_vline(xintercept = 1) + guides(color="none")
+
+
 
 
 
@@ -294,8 +227,6 @@ all_effects_data_plotting = all_effects_data %>%
   pivot_longer(cols = -"country", names_to = "pred", values_to = "est") %>%
   mutate(pred = case_match(pred, "Y_X" ~ "X_in_Y", "Y_M" ~ "M_in_Y", "M_X" ~ "X_in_M"),
          is_AG = country == "AG")
-
-
 
 plot_coefs_dens_plus_estimates = plot_coefs_dens +
   geom_point(data = all_effects_data_plotting)

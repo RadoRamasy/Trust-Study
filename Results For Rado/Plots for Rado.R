@@ -117,45 +117,45 @@ load(here("code", "Bootstrap Analysis", "Output", "Estimated_Effects.RData"))
 
 
 
-# Initialize Cluster ----
-# n_cores = B
-n_cores = detectCores() - 1
-# n_cores = detectCores()
-my_cluster = makeCluster(n_cores)
-registerDoSNOW(cl = my_cluster)
-clusterEvalQ(my_cluster,{
-  pacman::p_load(tibble, lme4, here, boot, dplyr)
-  
-  source(here("code", "Bootstrap Analysis", "Bootstrap_CI_Helper_Functions.R"))
-  source(here("code", "Bootstrap Analysis", "Run_Bootstrap_Functions.R"))
-  source(here("code", "Bootstrap Analysis", "Analyse_Bootstrap_Functions.R"))
-  })
-clusterExport(my_cluster, c("dat.ma", "mod_Y", "mod_M"))
-
-
-
-# Run Analysis ----
-# ## Serial ----
+# # Initialize Cluster ----
+# # n_cores = B
+# n_cores = detectCores() - 1
+# # n_cores = detectCores()
+# my_cluster = makeCluster(n_cores)
+# registerDoSNOW(cl = my_cluster)
+# clusterEvalQ(my_cluster,{
+#   pacman::p_load(tibble, lme4, here, boot, dplyr)
+#   
+#   source(here("code", "Bootstrap Analysis", "Bootstrap_CI_Helper_Functions.R"))
+#   source(here("code", "Bootstrap Analysis", "Run_Bootstrap_Functions.R"))
+#   source(here("code", "Bootstrap Analysis", "Analyse_Bootstrap_Functions.R"))
+# })
+# clusterExport(my_cluster, c("dat.ma", "mod_Y", "mod_M"))
+# 
+# 
+# 
+# # Run Analysis ----
+# # ## Serial ----
+# # tic()
+# # boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose = T)
+# # boot_results_npar = all_boot_reps_npar(B, dat.ma, .parallel = F, .verbose = T)
+# # cat("\n")
+# # toc()
+# 
+# ## Parallel ----
 # tic()
-# boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = F, .verbose = T)
-# boot_results_npar = all_boot_reps_npar(B, dat.ma, .parallel = F, .verbose = T)
+# print("Running parametric bootstrap.")
+# boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = T, .verbose = T)
+# toc()
+# tic()
+# print("Parametric bootstrap complete. Running non-parametric bootstrap.")
+# boot_results_npar = all_boot_reps_npar(B, dat.ma, .parallel = T, .verbose = T)
+# print("Non-parametric bootstrap complete.")
 # cat("\n")
 # toc()
-
-## Parallel ----
-tic()
-print("Running parametric bootstrap.")
-boot_results_par = all_boot_reps_par(B, dat.ma, mod_Y, mod_M, .parallel = T, .verbose = T)
-toc()
-tic()
-print("Parametric bootstrap complete. Running non-parametric bootstrap.")
-boot_results_npar = all_boot_reps_npar(B, dat.ma, .parallel = T, .verbose = T)
-print("Non-parametric bootstrap complete.")
-cat("\n")
-toc()
-
-
-stopCluster(my_cluster)
+# 
+# 
+# stopCluster(my_cluster)
 
 
 # save(boot_results_par, boot_results_npar, file = here("code", "Bootstrap Analysis", "Both_Boots_Real_Data.RData"))

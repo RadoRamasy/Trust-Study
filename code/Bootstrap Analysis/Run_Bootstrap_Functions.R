@@ -109,6 +109,7 @@ my_sim_merMod_par = function(fit, fix_coef = NULL, ran_coef_SD_mat = NULL){
 
 
 
+
 ### Performs one parametric bootstrap replicate for multilevel mediation analysis. 
 ### Returns fixed effects and mixed effects by country, both those used to generate
 ### the bootstrap sample and those predicted by models fit to the bootstrap sample.

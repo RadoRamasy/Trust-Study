@@ -70,6 +70,12 @@ In the bottom paragraph of the first column on page 265, \citeauthor{Boo98} defi
 
 Returning now to Equation (15) of \citeauthor{Boo98}, we get that $\bar{W}_i$ is a diagonal matrix with $jj$th element equal to $\hat{\mu}_{ij} (1 - \hat{\mu}_{ij})$. Note that the hat here denotes both estimation of parameters and prediction of $u_{ij}$ by its conditional mean given $y_i$.
 
+\subsection{Interpretation as Covariance Matrix}
+
+\textcolor{red}{This subsection is experimental. It's mostly based on pattern-matching formulas; I haven't done the corresponding formal derivations to be sure everything holds-up.}
+
+We can actually be a bit more general than Equation (15). Note the pre- and post-multiplication by $z_i$. This accounts for the chosen contrast, $z_i$. However, we can get the joint conditional predictive covariance matrix of all the random effects in group $i$ by computing $(Z_i^T \bar{W}_i Z_i + G^{-1})^{-1}$ and not taking its quadratic form with $z_i$.
+
 
 
 

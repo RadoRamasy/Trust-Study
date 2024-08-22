@@ -1,0 +1,32 @@
+\documentclass{article}
+
+% \usepackage{amsmath, amssymb}
+% \usepackage{xcolor}
+% \usepackage{caption, subcaption}
+% \usepackage{graphicx}
+% \usepackage{bm}             % For bold math symbols
+
+% \usepackage{natbib}
+% \bibliographystyle{plainnat}
+
+% \usepackage{hyperref}   % For the \url{} command
+
+
+% \newcommand{\bG}{\mathbb{G}}
+% \newcommand{\bF}{\mathbb{F}}
+% \newcommand{\bP}{\mathbb{P}}
+% \newcommand{\bE}{\mathbb{E}}
+% \newcommand{\bV}{\mathbb{V}}
+
+% \newcommand{\zdens}{\frac{e^{-z^2/2}}{\sqrt{2\pi}}}
+
+
+\title{Summary of Trust Study Bootstrap Analysis}
+
+\begin{document}
+
+\maketitle
+
+For this version of the analysis, we define mediation effects using the so-called ``product method''. That is, we fit regression models to predict $M$ using $X$, $C$ and to predict $Y$ using $M$, $X$, $C$. Write the linear predictors for these models as $a_0 + a_x X + A_C^T C$ and $b_0 + b_m M + b_x X + B_C^T C$ respectively. We define the direct effect of $X$ on $Y$ as $\exp(b_x)$, the indirect effect as $\exp(a_x b_m)$, and the total effect as their product. 
+
+\end{document}

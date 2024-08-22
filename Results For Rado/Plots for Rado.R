@@ -185,8 +185,15 @@ plot_boot_CIs = ggplot(data_boot_CIs_plot, aes(y = country, group = country, col
   geom_linerange(aes(xmin = lcl, xmax = ucl)) + facet_grid(rows = vars(Interval_Type), cols = vars(med_type)) +
   geom_vline(xintercept = 1) + guides(color="none")
 
+### Focus only on non-parametric bootstrap
+data_boot_CIs_plot_npar = data_boot_CIs_plot %>% filter(boot_type == "npar")
+plot_boot_CIs_npar = ggplot(data_boot_CIs_plot_npar, aes(y = country, group = country, color = is_AG)) + geom_point(aes(x = estimate)) +
+  geom_linerange(aes(xmin = lcl, xmax = ucl)) + facet_grid(rows = vars(Interval_Type), cols = vars(med_type)) +
+  geom_vline(xintercept = 1) + guides(color="none")
 
-
+pdf(here("Results For Rado", "NPar_CIs_Forest.pdf"))
+plot(plot_boot_CIs_npar)
+dev.off()
 
 
 

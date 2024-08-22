@@ -38,3 +38,6 @@ all_cov_mats = purrr::map2(all_groups, all_Zs, ~{
 
 
 
+# lme4 implementation
+RE_preds = as.data.frame(ranef(fit))
+

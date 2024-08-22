@@ -28,39 +28,35 @@
 \newcommand{\logit}{\mathrm{logit}}
 
 
-\title{Analytical Uncertainty Quantification for Multilevel Mediation Analysis}
+\title{Analytical Uncertainty Quantification for Predicted Random Effects in GLMMs}
+\date{}
 
 \begin{document}
 
 \maketitle
-\section{Notes to Self}
-\begin{outline}
-    \1 Summarize problem
-    \1 Describe MSEP formula and decomposition
-    \1 Give conditional variance formula 
-        \2 Explain derivation
-        \2 Explain components of formula
-    \1 Justify neglecting correction term
-\end{outline}
 
 This note summarizes the work of \citet{Boo98} as it pertains to Rowin's thesis.
 
-Our statistical model is a GLM with random effects. We assume that our response, $Y$, has an exponential family distribution with the canonical parameterization. That is,
+\section{Model}
+
+Our statistical model is a GLM with random effects. We assume that, given the random effects, our response, $Y$, has an exponential family distribution with the canonical parameterization. That is,
 %
 \begin{equation}
     f(y) = \exp\left( \left[y \theta - b(\theta)\right] + c(y) \right) \label{eq:exp_dens}
 \end{equation}
 %
-If $Y$ is Bernoulli$(p)$, then $\theta = \log[p/(1-p)]$, $b(\theta) = \log(1 + e^\theta) = -\log(1-p)$, and $c(y) = 0$. We model the parameter $\theta$ as depending on two sets of covariates, $X$ and $Z$, through some fixed effects, $\beta$, and random effects, $U$, respectively. We assume that the observed responses occur in groups, or clusters. Write $Y_{ij}$ for the $j$th observation from group $i$. We further assume that each group has its own level for the random effect, $U_i$, and that these random effects are independent and identically distributed from some common distribution, usually Normal$(0, \Sigma)$.
+If $Y$ is Bernoulli$(p)$, then $\theta = \log[p/(1-p)]$, $b(\theta) = \log(1 + e^\theta) = -\log(1-p)$, and $c(y) = 0$. We model the parameter $\theta$ as depending on two sets of covariates, $X$ and $Z$, through some fixed effects, $\beta$, and random effects, $U$, respectively. We assume that the observed responses occur in groups, or clusters. Write $Y_{ij}$ for the $j$th observation from group $i$. We further assume that each group has its own level for the random effect, $U_i$, and that these random effects are independent and identically distributed from some common distribution, usually Normal$(0, \Sigma)$\footnote{\citeauthor{Boo98} use $G$ instead of $\Sigma$ here.}.
 
 
 Since we're doing regression, we will focus on the conditional mean of $Y$ given covariates. Since we're also doing mixed-effects modelling, we start by further conditioning on the random effects, $U$. To this end, write $\mu_{ij} = \bE (Y |U = U_i, X = X_{ij}, Z = Z_{ij})$ for the mean of observation $j$ from group $i$, when the random effects and covariates are held fixed. Following the usual GLM setup, we model $g(\mu_{ij}) = \eta_{ij} = X_{ij} \beta + Z_{ij} U_i$. 
 
-As an aside, I've always had trouble keeping all the different scales which arise in GLMs straight in my head. There's $\mu$, the mean of $Y$, $\eta$, the linear predictor, and $\theta$, the canonical parameter\footnote{Note that this canonical parameter often differs from the parameters we're used to thinking about for the distribution in question. See, e.g., the Bernoulli distribution above, or try expressing the Normal$(\mu, \sigma)$ as an exponential family distribution.}. There are then functions which map between these different scales: the link function, $g(\mu) = \eta$, the mean function, $b'(\theta) = \mu$, and the ``variance function'', $b''(\theta)$. This last one bothers me because if you include nuisance (or overdispersion) parameters in your exponential family then the variance of $Y$ is not equal to the variance function. If you choose the canonical link function though, then $g(\mu) = \theta$ (this is the definition of the canonical link), which really muddies things for me. Rant over.
+Feel free to skip this paragraph, I just wanted to rant about GLMs a bit. I've always had trouble keeping all the different scales which arise in GLMs straight in my head. There's $\mu$, the mean of $Y$, $\eta$, the linear predictor, and $\theta$, the canonical parameter\footnote{Note that this canonical parameter often differs from the parameters we're used to thinking about for the distribution in question. See, e.g., the Bernoulli distribution above, or try expressing the Normal$(\mu, \sigma)$ as an exponential family distribution.}. There are then functions which map between these different scales: the link function, $g(\mu) = \eta$, the mean function, $b'(\theta) = \mu$, and the ``variance function'', $b''(\theta)$. This last one bothers me because if you include nuisance (or overdispersion) parameters in your exponential family then the variance of $Y$ is not equal to the variance function. If you choose the canonical link function though, then $g(\mu) = \theta$ (this is the definition of the canonical link), which really muddies things for me. Okay, rant over.
+
+\section{Prediction and UQ}
 
 Our current goal is the estimate/predict the values of the random effects within each group. It is common in the literature to use the word ``predict'' here, because the random effects aren't parameters to be estimated, but instead random variables, which we would usually talk about ``predicting''. Note that the different groups in our problem are independent, so we can focus on prediction of a single $U_i$, then apply our method individually to the other groups. \citeauthor{Boo98} recommend predicting $U_i$ with its conditional mean given the data from group $i$, $Y_i$. Note that this conditional mean depends on the model parameters, $\beta$ and $\Sigma$, which in practice must be estimated. A lot of software (e.g. the \texttt{lme4} package in \texttt{R}) actually uses the conditional mode instead of the conditional mean, since there is a nice algorithm to compute the mode, but the mean is hard (i.e. slow) in general.
 
-\citeauthor{Boo98} discuss prediction of the linear predictor, $\eta_{ij}$, but we can just think of this as $U_i$.
+\citeauthor{Boo98} discuss prediction of the linear predictor, $\eta_{ij}$, but we can just think of this as $U_i$. They predict the random effects within a group with their conditional mean given the observed responses from that group. See Equations (6) and (7) of \citeauthor{Boo98}. They then define the variance of this predicted random effect as its conditional variance given the group's observed responses. See Equation (8). Similarly, they define the conditional mean squared error of prediction (CMSEP) within each group conditional on the observed responses (Equation (9)). They also give a decomposition of this CMSEP in Equation (10). For simplicity, we are just going to focus on one term in this decomposition, $v_i$. Section 4 of \citeauthor{Boo98} goes into detail on how to estimate $v_i$, culminating in Equation (15). We use Equation (15) as our predictive variance of $u_i$, the random effect in group $i$.
 
 \section{Interpretation of Equation (15)}
 
@@ -68,7 +64,7 @@ There are a bunch of symbols in Equation 15 of \citeauthor{Boo98} which we defin
 
 In the bottom paragraph of the first column on page 265, \citeauthor{Boo98} define the ``iterative weights'' as $w_{ij}/ \left[ \sigma_0^2 V(\mu_{ij}) g'(\mu_{ij})^2 \right]$. For our purposes, both $w_{ij}$ and $\sigma_0^2$ can be ignored (i.e. set to 1). Now onto $V(\mu)$ and $g'(\mu)$. The former, called the ``variance function'', can equivalently be expressed as $b''(\theta)$, where $b$ comes directly from the exponential family density given in \eqref{eq:exp_dens}. Differentiating $b$ twice, then returning to $\mu$-scale, we get that $V(\mu) = \mu (1 - \mu)$. Next, $g$ is the link function, which maps $\mu$ to the linear predictor scale. For logistic regression, $g(\mu) = \logit(\mu)$. Differentiating, we get $g'(\mu) = [\mu (1 - \mu)]^{-1}$. Putting this all together, we get that the ``iterative weight'' for a single observation in the logistic model is $\mu_{ij} (1 - \mu_{ij})$.
 
-Returning now to Equation (15) of \citeauthor{Boo98}, we get that $\bar{W}_i$ is a diagonal matrix with $jj$th element equal to $\hat{\mu}_{ij} (1 - \hat{\mu}_{ij})$. Note that the hat here denotes both estimation of parameters and prediction of $u_{ij}$ by its conditional mean given $y_i$.
+Returning now to Equation (15) of \citeauthor{Boo98}, we get that $\bar{W}_i$ is a diagonal matrix with $jj$th element equal to $\hat{\mu}_{ij} (1 - \hat{\mu}_{ij})$. Note that the hat here denotes both estimation of parameters and prediction of $u_{ij}$ by its conditional mean given $y_i$. 
 
 \subsection{Interpretation as Covariance Matrix}
 
@@ -76,6 +72,11 @@ Returning now to Equation (15) of \citeauthor{Boo98}, we get that $\bar{W}_i$ is
 
 We can actually be a bit more general than Equation (15). Note the pre- and post-multiplication by $z_i$. This accounts for the chosen contrast, $z_i$. However, we can get the joint conditional predictive covariance matrix of all the random effects in group $i$ by computing $(Z_i^T \bar{W}_i Z_i + G^{-1})^{-1}$ and not taking its quadratic form with $z_i$.
 
+\section{Implementation}
+
+It turns out that all of this has already been implemented in the \texttt{lme4} package in \texttt{R}. In fact, they focus only on $v_i$ from the CMSEP decomposition in the same way we do.
+
+As with most things in \texttt{lme4}, what we're looking for is a bit hidden and not well-documented. First, fit your \texttt{lmer} or \texttt{glmer} model, then call the \texttt{ranef()} function. This gives predicted random effects for each group, but also computes the predictive SDs as given by Equation (15) of \citeauthor{Boo98}. Unfortunately, these SDs are hidden in an attribute. The best way to extract them is to call \texttt{as.data.frame()} on the output of \texttt{ranef()}. This will give a well-organized data frame with columns for (among other things) the predicted random effects (labelled \texttt{condval}) and predictive SDs (labelled \texttt{condsd}).
 
 
 
